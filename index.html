@@ -4,7 +4,7 @@
 
 <head>
 
-  <title>粒子背景版</title>
+  <title>終極粒子版</title>
 
   <style>
 
@@ -14,11 +14,11 @@
 
       overflow: hidden;
 
-      background: radial-gradient(circle, #0f2027, #203a43, #2c5364);
-
-      color: white;
+      background: radial-gradient(circle, #020024, #090979, #000);
 
       font-family: Arial, sans-serif;
+
+      color: white;
 
     }
 
@@ -26,15 +26,17 @@
 
       position: absolute;
 
-      top: 20px;
+      top: 25px;
 
       width: 100%;
 
       text-align: center;
 
-      z-index: 1;
+      z-index: 2;
 
-      text-shadow: 0 0 20px cyan;
+      font-size: 36px;
+
+      text-shadow: 0 0 20px cyan, 0 0 40px purple;
 
     }
 
@@ -46,29 +48,21 @@
 
       left: 50%;
 
-      width: 120px;
+      width: 130px;
 
-      height: 120px;
+      height: 130px;
+
+      border-radius: 30px;
+
+      background: linear-gradient(45deg, cyan, lime, yellow, hotpink);
+
+      box-shadow: 0 0 50px cyan;
 
       transform: translate(-50%, -50%);
 
-      border-radius: 20px;
-
-      background: linear-gradient(45deg, cyan, lime, yellow);
-
-      box-shadow: 0 0 40px cyan;
+      animation: spin 4s linear infinite, glow 1.5s infinite alternate;
 
       z-index: 2;
-
-      animation: spin 4s linear infinite;
-
-    }
-
-    .box:active {
-
-      transform: translate(-50%, -50%) scale(1.5) rotate(180deg);
-
-      box-shadow: 0 0 80px yellow;
 
     }
 
@@ -77,6 +71,14 @@
       from { transform: translate(-50%, -50%) rotate(0deg); }
 
       to { transform: translate(-50%, -50%) rotate(360deg); }
+
+    }
+
+    @keyframes glow {
+
+      from { box-shadow: 0 0 30px cyan; }
+
+      to { box-shadow: 0 0 80px yellow, 0 0 120px hotpink; }
 
     }
 
@@ -96,9 +98,9 @@
 
 <body>
 
-  <h1>✨ 粒子動畫 ✨</h1>
+  <h1>🌌 終極粒子宇宙 🌌</h1>
 
-  <div class="box" onclick="boom()"></div>
+  <div class="box"></div>
 
   <canvas id="canvas"></canvas>
 
@@ -112,11 +114,41 @@
 
     canvas.height = window.innerHeight;
 
+    const mouse = { x: null, y: null };
+
     let particles = [];
+
+    window.addEventListener("mousemove", e => {
+
+      mouse.x = e.x;
+
+      mouse.y = e.y;
+
+    });
+
+    window.addEventListener("touchmove", e => {
+
+      mouse.x = e.touches[0].clientX;
+
+      mouse.y = e.touches[0].clientY;
+
+    });
+
+    window.addEventListener("click", () => {
+
+      particles.forEach(p => {
+
+        p.dx *= 6;
+
+        p.dy *= 6;
+
+      });
+
+    });
 
     function createParticles() {
 
-      for (let i = 0; i < 80; i++) {
+      for (let i = 0; i < 120; i++) {
 
         particles.push({
 
@@ -126,9 +158,11 @@
 
           r: Math.random() * 3 + 1,
 
-          dx: (Math.random() - 0.5) * 2,
+          dx: (Math.random() - 0.5) * 1.5,
 
-          dy: (Math.random() - 0.5) * 2
+          dy: (Math.random() - 0.5) * 1.5,
+
+          color: `hsl(${Math.random() * 360}, 100%, 60%)`
 
         });
 
@@ -136,19 +170,71 @@
 
     }
 
-    function drawParticles() {
+    function drawLines() {
+
+      for (let i = 0; i < particles.length; i++) {
+
+        for (let j = i + 1; j < particles.length; j++) {
+
+          const dx = particles[i].x - particles[j].x;
+
+          const dy = particles[i].y - particles[j].y;
+
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 110) {
+
+            ctx.strokeStyle = "rgba(255,255,255,0.2)";
+
+            ctx.lineWidth = 1;
+
+            ctx.beginPath();
+
+            ctx.moveTo(particles[i].x, particles[i].y);
+
+            ctx.lineTo(particles[j].x, particles[j].y);
+
+            ctx.stroke();
+
+          }
+
+        }
+
+      }
+
+    }
+
+    function animate() {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = "white";
-
       particles.forEach(p => {
+
+        ctx.fillStyle = p.color;
 
         ctx.beginPath();
 
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
 
         ctx.fill();
+
+        if (mouse.x && mouse.y) {
+
+          const dx = mouse.x - p.x;
+
+          const dy = mouse.y - p.y;
+
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 120) {
+
+            p.x -= dx / 25;
+
+            p.y -= dy / 25;
+
+          }
+
+        }
 
         p.x += p.dx;
 
@@ -160,25 +246,15 @@
 
       });
 
-      requestAnimationFrame(drawParticles);
+      drawLines();
 
-    }
-
-    function boom() {
-
-      particles.forEach(p => {
-
-        p.dx *= 3;
-
-        p.dy *= 3;
-
-      });
+      requestAnimationFrame(animate);
 
     }
 
     createParticles();
 
-    drawParticles();
+    animate();
 
   </script>
 

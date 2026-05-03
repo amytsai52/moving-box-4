@@ -1,0 +1,65 @@
+# moving-box-4<!DOCTYPE html>
+<html>
+<head>
+  <title>漸層動畫版</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 28px;
+
+      /* 🌈 背景漸層動畫 */
+      background: linear-gradient(45deg, #ff6b6b, #6bcBff, #6bff95, #d96bff);
+      background-size: 300% 300%;
+      animation: bgMove 6s infinite alternate;
+    }
+
+    @keyframes bgMove {
+      0% { background-position: left; }
+      100% { background-position: right; }
+    }
+
+    .box {
+      width: 100px;
+      height: 100px;
+      margin-top: 40px;
+
+      /* 🌈 方塊漸層 */
+      background: linear-gradient(45deg, lime, cyan);
+      border-radius: 10px;
+
+      /* 動畫 */
+      animation: float 2s infinite alternate;
+      transition: 0.3s;
+    }
+
+    @keyframes float {
+      from { transform: translateY(0); }
+      to { transform: translateY(150px); }
+    }
+
+    /* 點擊放大效果 */
+    .box:active {
+      transform: scale(1.3);
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🌈 漸層動畫版</h1>
+
+  <div class="box" onclick="changeColor()"></div>
+
+  <script>
+    function changeColor() {
+      document.querySelector('.box').style.background =
+        "linear-gradient(45deg, red, yellow)";
+    }
+  </script>
+</body>
+</html>
